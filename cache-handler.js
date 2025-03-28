@@ -1,5 +1,5 @@
 const { CacheHandler } = require("@neshca/cache-handler");
-const createRedisHandler = require("@neshca/cache-handler/redis-stack").default;
+const createRedisHandler = require("@neshca/cache-handler/redis-strings").default;
 const createLruHandler = require("@neshca/cache-handler/local-lru").default;
 const { createClient } = require("redis");
 const { PHASE_PRODUCTION_BUILD } = require("next/constants");
@@ -65,6 +65,10 @@ CacheHandler.onCreation(async () => {
         client,
         keyPrefix: "prefix:",
         timeoutMs: 1000,
+        imeoutMs: 1000,
+        keyExpirationStrategy: 'EXAT',
+        sharedTagsKey: '__sharedTags__',
+        revalidateTagQuerySize: 100
       });
       
       return {
