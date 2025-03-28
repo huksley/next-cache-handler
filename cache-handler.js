@@ -57,23 +57,33 @@ CacheHandler.onCreation(async () => {
 
   /** @type {import("@neshca/cache-handler").Handler | null} */
   let redisHandler = null;
-  if (client?.isReady) {
-    // Create the `redis-stack` Handler if the client is available and connected.
-    redisHandler = await createRedisHandler({
-      client,
-      keyPrefix: "prefix:",
-      timeoutMs: 1000,
-    });
+  if (client) {
+    if (client?.isReady) {
+      // Create the `redis-stack` Handler if the client is available and connected.
+      console.info("Creating redis cache handler");
+      redisHandler = await createRedisHandler({
+        client,
+        keyPrefix: "prefix:",
+        timeoutMs: 1000,
+      });
+      
+      return {
+        handlers: [redisHandler]
+      };
+    } else {
+      console.warn("Client not ready");
+    }
   }
+  
   // Fallback to LRU handler if Redis client is not available.
   // The application will still work, but the cache will be in memory only and not shared.
-  const LRUHandler = createLruHandler();
+  const fallbackHandler = createLruHandler();
   console.warn(
     "Falling back to LRU handler because Redis client is not available.",
   );
 
   return {
-    handlers: [redisHandler, LRUHandler],
+    handlers: [redisHandler, fallbackHandler],
   };
 });
 
