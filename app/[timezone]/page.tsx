@@ -3,6 +3,7 @@ import { CacheStateWatcher } from "../cache-state-watcher";
 import { Suspense } from "react";
 import { RevalidateFrom } from "../revalidate-from";
 import Link from "next/link";
+import tc from "timezonecomplete"
 
 type TimeData = {
   unixtime: number;
@@ -14,23 +15,25 @@ const timeZones = ["cet", "gmt"];
 
 export const revalidate = 500;
 
+
+async function getTimeData(timezone: string): Promise<TimeData> {
+  const now = new Date();
+  const localTime = new tc.DateTime(now.getTime(), tc.TimeZone.zone(timezone));
+  
+  return {
+    unixtime: Math.floor(now.getTime() / 1000),
+    datetime: localTime.toIsoString(),
+    timezone: timezone.toUpperCase()
+  };
+}
+
 export async function generateStaticParams() {
   return timeZones.map((timezone) => ({ timezone }));
 }
 
 export default async function Page({ params: { timezone } }) {
-  const data = await fetch(
-    `https://worldtimeapi.org/api/timezone/${timezone}`,
-    {
-      next: { tags: ["time-data"] },
-    },
-  );
-
-  if (!data.ok) {
-    notFound();
-  }
-
-  const timeData: TimeData = await data.json();
+  // Get tzdata from timezone name
+  const timeData: TimeData = await getTimeData(timezone);
 
   return (
     <>

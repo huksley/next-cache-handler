@@ -10,7 +10,9 @@
     "next": "^14.2.25",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "redis": "latest"
+    "redis": "latest",
+    "timezonecomplete": "^5.13.1",
+    "tzdata": "^1.0.44"
   },
   "devDependencies": {
     "@types/node": "^20",
