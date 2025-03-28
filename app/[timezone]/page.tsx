@@ -3,7 +3,7 @@ import { CacheStateWatcher } from "../cache-state-watcher";
 import { Suspense } from "react";
 import { RevalidateFrom } from "../revalidate-from";
 import Link from "next/link";
-import tc from "timezonecomplete"
+import { formatInTimeZone } from "date-fns-tz";
 
 type TimeData = {
   unixtime: number;
@@ -11,18 +11,16 @@ type TimeData = {
   timezone: string;
 };
 
-const timeZones = ["cet", "gmt"];
+const timeZones = ["CET", "GMT"];
 
 export const revalidate = 500;
 
-
 async function getTimeData(timezone: string): Promise<TimeData> {
   const now = new Date();
-  const localTime = new tc.DateTime(now.getTime(), tc.TimeZone.zone(timezone));
   
   return {
     unixtime: Math.floor(now.getTime() / 1000),
-    datetime: localTime.toIsoString(),
+    datetime: formatInTimeZone(now, timezone, "yyyy-MM-dd HH:mm:ss z"),
     timezone: timezone.toUpperCase()
   };
 }

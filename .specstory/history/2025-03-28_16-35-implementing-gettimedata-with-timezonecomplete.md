@@ -169,6 +169,76 @@ The function will now correctly display the time in either CET or GMT timezone a
 
 ---
 
+_**User**_
+
+no implement using date-fns-tz
+
+---
+
+_**Assistant**_
+
+I'll help you implement the `getTimeData` function using `date-fns-tz` instead. First, we'll need to install the package and then implement the function.
+
+Let me first check if we need to install the package:
+
+
+---
+
+<details>
+            <summary>Grep search for "date-fns-tz" • **2** files</summary>
+        
+| File | Line | Match |
+|------|------|-------|
+| `file:///Users/ruslan/src/next.js/examples/cache-handler-redis/package.json` | L10 | `"date-fns-tz": "^3.2.0",` |
+| `file:///Users/ruslan/src/next.js/examples/cache-handler-redis/package-lock.json` | L9 | `"date-fns-tz": "^3.2.0",` |
+| `file:///Users/ruslan/src/next.js/examples/cache-handler-redis/package-lock.json` | L362 | `"node_modules/date-fns-tz": {` |
+| `file:///Users/ruslan/src/next.js/examples/cache-handler-redis/package-lock.json` | L364 | `"resolved": "https://registry.npmjs.org/date-fns-tz/-/date-fns-tz-3.2.0.tgz",` |
+
+</details>
+
+---
+
+Great! The package is already installed. Now let me implement the function using `date-fns-tz`:
+
+
+---
+
+```diff
+  import { RevalidateFrom } from "../revalidate-from";
+  import Link from "next/link";
++ import { formatInTimeZone } from "date-fns-tz";
+  
+  type TimeData = {
+  
+  async function getTimeData(timezone: string): Promise<TimeData> {
++   const now = new Date();
+    
++   return {
++     unixtime: Math.floor(now.getTime() / 1000),
++     datetime: formatInTimeZone(now, timezone, "yyyy-MM-dd HH:mm:ss z"),
++     timezone: timezone.toUpperCase()
++   };
+  }
+  
+```
+
+---
+
+I've implemented the `getTimeData` function using `date-fns-tz`. Here's what the implementation does:
+
+1. Imports the `formatInTimeZone` function from `date-fns-tz`
+2. Gets the current time using `new Date()`
+3. Returns an object with:
+   - `unixtime`: The current Unix timestamp in seconds
+   - `datetime`: The formatted date string in the specified timezone using the format "yyyy-MM-dd HH:mm:ss z" (which includes the timezone abbreviation)
+   - `timezone`: The uppercase timezone name
+
+The `formatInTimeZone` function from `date-fns-tz` is a more straightforward way to handle timezone conversions compared to the previous implementation. It will correctly format the time in either CET or GMT timezone as specified in the `timeZones` array.
+
+The page will still revalidate every 500 seconds (as defined by the `revalidate` constant) to show the updated time.
+
+---
+
 
 
 ---
