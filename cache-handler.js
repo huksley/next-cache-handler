@@ -48,9 +48,7 @@ CacheHandler.onCreation(async () => {
           console.info("Redis client disconnected.");
         })
         .catch(() => {
-          console.warn(
-            "Failed to quit the Redis client after failing to connect.",
-          );
+          console.warn("Failed to quit the Redis client after failing to connect.");
         });
     }
   }
@@ -66,25 +64,24 @@ CacheHandler.onCreation(async () => {
         keyPrefix: "prefix:",
         timeoutMs: 1000,
         imeoutMs: 1000,
-        keyExpirationStrategy: 'EXAT',
-        sharedTagsKey: '__sharedTags__',
-        revalidateTagQuerySize: 100
+        // Only available in Redis 6.2+
+        // keyExpirationStrategy: 'EXAT',
+        sharedTagsKey: "__sharedTags__",
+        revalidateTagQuerySize: 100,
       });
-      
+
       return {
-        handlers: [redisHandler]
+        handlers: [redisHandler],
       };
     } else {
       console.warn("Client not ready");
     }
   }
-  
+
   // Fallback to LRU handler if Redis client is not available.
   // The application will still work, but the cache will be in memory only and not shared.
   const fallbackHandler = createLruHandler();
-  console.warn(
-    "Falling back to LRU handler because Redis client is not available.",
-  );
+  console.warn("Falling back to LRU handler because Redis client is not available.");
 
   return {
     handlers: [redisHandler, fallbackHandler],
